@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flood Monitor Test</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div class="flood-monitoring">
+        <div class="flood-status">
+            <h2>Flood Monitor Test</h2>
+            <div class="test-controls">
+                <input type="range" id="waterLevel" min="0" max="300" value="150">
+                <p>Water Level: <span id="levelValue">150</span> cm</p>
+            </div>
+            <div class="status">
+                <h1>Current Status</h1>
+                <div class="level" id="water-level">--</div>
+                <div class="indicator" id="status-indicator"></div>
+            </div>
+        </div>
+    </div>
+    <script src="test.js"></script>
+</body>
+</html>

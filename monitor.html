@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>River Monitoring Details</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .export-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .export-btn {
+            background: #00796b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .export-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #363636;
+            color: #ffffff;
+            min-width: 120px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+
+        .export-dropdown:hover .export-menu {
+            display: block;
+        }
+
+        .export-menu button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            color: #ffffff;
+        }
+
+        .export-menu button:hover {
+            background: #454545;
+        }
+
+        .monitor-container {
+            position: relative;
+            padding: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin-top: 20px;
+        }
+
+        .stats-panel {
+            background-color: #363636;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #363636;
+            border-left: 4px solid #4CAF50;
+            border-radius: 5px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-active {
+            background-color: #4CAF50;
+        }
+
+        .status-inactive {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="monitor-container">
+        <div id="chart"></div>
+        <div class="stats-panel">
+            <div id="water-level"></div>
+            <div id="status-indicator"></div>
+            <div id="status-text"></div>
+            <div class="statistics">
+                <div id="avg-level"></div>
+                <div id="max-level"></div>
+                <div id="min-level"></div>
+            </div>
+        </div>
+        <div id="alerts-list"></div>
+        <div id="monitorHeader"></div>
+        <div class="status-indicator">
+            <div id="statusDot" class="status-dot"></div>
+            <span id="statusText"></span>
+        </div>
+        <div id="waterLevelChart"></div>
+        <div id="statsPanel" class="stats-panel"></div>
+    </div>
+    <script>
+        // Get parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sensorId = urlParams.get('sensorId');
+        const riverName = urlParams.get('river');
+
+        // Initialize monitoring interface
+        window.monitorInterface = {
+            receiveWaterLevelUpdate: function(data) {
+                // Update chart and stats when new data arrives
+                updateChart(data);
+                updateStats(data);
+                checkStatus();
+            }
+        };
+
+        // Setup header
+        document.getElementById('monitorHeader').innerHTML = `
+            <h2>${riverName} Monitoring Station</h2>
+            <p>Sensor ID: ${sensorId}</p>
+        `;
+
+        // Initialize data arrays for the chart
+        let timeData = [];
+        let levelData = [];
+        
+        function updateChart(data) {
+            // Add new data point
+            timeData.push(new Date());
+            levelData.push(data.waterLevel);
+            
+            // Keep only last 50 readings
+            if (timeData.length > 50) {
+                timeData.shift();
+                levelData.shift();
+            }
+            
+            // Update the plot
+            Plotly.update('waterLevelChart', {
+                x: [timeData],
+                y: [levelData]
+            });
+        }
+
+        // Initialize empty chart with proper configuration
+        Plotly.newPlot('waterLevelChart', [{
+            x: timeData,
+            y: levelData,
+            type: 'line',
+            name: 'Water Level',
+            line: { color: '#00ff00' }
+        }], {
+            title: 'Water Level Readings',
+            paper_bgcolor: '#2d2d2d',
+            plot_bgcolor: '#363636',
+            font: { color: '#ffffff' },
+            yaxis: { 
+                title: 'Water Level (m)',
+                gridcolor: '#4a4a4a',
+                zerolinecolor: '#4a4a4a'
+            },
+            xaxis: { 
+                title: 'Time',
+                gridcolor: '#4a4a4a',
+                zerolinecolor: '#4a4a4a',
+                type: 'date'
+            }
+        });
+
+        let lastUpdateTime = Date.now();
+        let statusCheckInterval;
+
+        function checkStatus() {
+            const timeSinceLastUpdate = Date.now() - lastUpdateTime;
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (timeSinceLastUpdate > 30000) { // 30 seconds threshold
+                statusDot.className = 'status-dot status-inactive';
+                statusText.textContent = 'Monitor Inactive';
+            } else {
+                statusDot.className = 'status-dot status-active';
+                statusText.textContent = 'Monitor Active';
+            }
+        }
+
+        // Start status checking
+        statusCheckInterval = setInterval(checkStatus, 5000); // Check every 5 seconds
+        checkStatus(); // Initial check
+
+        // Cleanup on page unload
+        window.addEventListener('unload', () => {
+            clearInterval(statusCheckInterval);
+        });
+    </script>
+</body>
+</html>

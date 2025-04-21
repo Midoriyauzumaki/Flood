@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Flood Monitoring System</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Ensure full height */
+            overflow: hidden;
+            background-color: #f4f6f9; /* Add a subtle background color */
+        }
+
+        .split-container {
+            display: flex;
+            flex: 1; /* Take up remaining space */
+            width: 100%;
+            max-width: 1200px; /* Limit maximum width for better alignment */
+            margin: auto; /* Center the container */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+            border-radius: 10px; /* Add rounded corners */
+            overflow: hidden; /* Clip overflowing content */
+            height: 100vh; /* Full height */
+        }
+
+        .form-section {
+            flex: 1;
+            background: url('image.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center vertically */
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            min-height: 500px; /* Set minimum height */
+        }
+
+        .form-section h1, 
+        .form-section p {
+            color: rgb(25, 157, 128);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .form-section form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
+            gap: 15px; /* Add consistent spacing between elements */
+            background: rgba(155, 172, 167, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-links {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .form-links a {
+            color: #00796b;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .form-links a:hover {
+            color: #004d40;
+            text-decoration: underline;
+        }
+
+        .form-section input {
+            width: 100%;
+            padding: 12px; /* Slightly larger padding */
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-section button {
+            width: 100%;
+            padding: 14px; /* Slightly larger padding */
+            background: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background 0.3s ease; /* Smooth hover effect */
+        }
+
+        .form-section button:hover {
+            background: #005a4f;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .image-section {
+            flex: 1;
+            background: linear-gradient(135deg, #00796b, #004d40);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .image-section img {
+            max-width: 180px; /* Increased size */
+            height: 180px; /* Ensure it's a square */
+            border-radius: 50%; /* Make it circular */
+            object-fit: cover; /* Ensure proper scaling */
+            background-color: transparent; /* Remove white background */
+            margin-bottom: 20px;
+            border: 3px solid white; /* Add a border for better visibility */
+        }
+
+        .image-section h2 {
+            font-size: 1.8rem; /* Slightly smaller font */
+            margin-bottom: 10px;
+        }
+
+        .image-section p {
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 1000px;
+        }
+
+        @media (max-width: 1000px) {
+            .split-container {
+                flex-direction: column;
+                height: auto; /* Allow scrolling on smaller screens */
+                margin: 20px; /* Add spacing around the container */
+            }
+
+            .form-section, .image-section {
+                flex: none;
+                width: 100%;
+                padding: 20px;
+                height: auto; /* Adjust height for stacked layout */
+            }
+
+            .image-section img {
+                max-width: 150px; /* Adjust size for tablets */
+                height: 150px;
+            }
+
+            .image-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .image-section p {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-section p {
+                font-size: 0.9rem;
+            }
+
+            .form-section input, .form-section button {
+                font-size: 14px;
+                padding: 10px; /* Slightly larger padding for better usability */
+            }
+
+            .image-section img {
+                max-width: 120px; /* Adjust size for mobile */
+                height: 120px;
+            }
+
+            .image-section h2 {
+                font-size: 1.2rem;
+            }
+
+            .image-section p {
+                font-size: 0.8rem;
+            }
+        }
+
+        .book-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px; /* Enable 3D effect */
+        }
+
+        .book {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 1s ease-in-out; /* Smooth transition */
+        }
+
+        .book.open {
+            transform: rotateY(-180deg); /* Flip to show the login form */
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Hide the back side */
+        }
+
+        .page.front {
+            background: linear-gradient(135deg, #00796b, #004d40);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .page.front h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .page.front p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .page.front button {
+            padding: 12px 20px;
+            background: white;
+            color: #00796b;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .page.front button:hover {
+            background: #f4f6f9;
+        }
+
+        .page.back {
+            background: #ffffff;
+            transform: rotateY(180deg); /* Back side of the book */
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #00796b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        .loading-message {
+            display: none;
+            color: #00796b;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading .loading-spinner,
+        .loading .loading-message {
+            display: block;
+        }
+
+        .loading button[type="submit"] {
+            display: none;
+        }
+
+        .success-message {
+            display: none;
+            color: #4CAF50;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 16px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .loading.success .success-message {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-out {
+            animation: fadeOutRight 0.5s forwards;
+        }
+
+        .fade-in {
+            animation: fadeInLeft 0.5s forwards;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            animation: slideDown 0.3s;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-modal:hover {
+            color: #000;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="book-container">
+        <div class="book" id="book">
+            <div class="page front">
+                <h1>Welcome to the Flood Monitoring System</h1>
+                <p>Stay informed and prepared with real-time flood monitoring.</p>
+                <button onclick="openLogin()">Login</button>
+            </div>
+            <div class="page back">
+                <div class="split-container">
+                    <div class="form-section">
+                        <h1>Welcome Back</h1>
+                        <p>Login to access the Flood Monitoring System</p>
+                        <form onsubmit="return validateForm(event)">
+                            <input type="text" id="username" placeholder="Username" required>
+                            <input type="password" id="password" placeholder="Password" required>
+                            <div class="loading-spinner"></div>
+                            <div class="loading-message">Logging in...</div>
+                            <div class="success-message">Login successful! Redirecting...</div>
+                            <button type="submit">Login</button>
+                            <div class="form-links">
+                                <a onclick="forgotPassword()">Forgot Password?</a>
+                                <a onclick="createAccount()">Create Account</a>
+                            </div>
+                            <div id="error-message" class="error-message"></div>
+                        </form>
+                    </div>
+                    <div class="image-section">
+                        <img src="sentinel.png" alt="Flood Monitoring System Logo">
+                        <h2>Stay Informed</h2>
+                        <p>Monitor real-time flood levels and stay prepared with our advanced flood monitoring system.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Replace the existing modals with these new ones -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('forgotPasswordModal')">&times;</span>
+            <iframe src="forgot-password.html" frameborder="0" style="width:100%; height:300px;"></iframe>
+        </div>
+    </div>
+
+    <div id="createAccountModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('createAccountModal')">&times;</span>
+            <iframe src="create-account.html" frameborder="0" style="width:100%; height:450px;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        function openLogin() {
+            const book = document.getElementById('book');
+            book.classList.add('open'); // Add the "open" class to flip the book
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+            const container = document.querySelector('.split-container');
+
+            // Show loading state
+            form.classList.add('loading');
+            errorMessage.textContent = '';
+
+            // Simulate loading delay
+            setTimeout(() => {
+                if (username === "admin" && password === "admin123") {
+                    form.classList.add('success');
+                    container.classList.add('fade-out');
+                    
+                    setTimeout(() => {
+                        sessionStorage.setItem('authenticated', 'true');
+                        window.location.href = "website/index.html";
+                    }, 500);
+                } else {
+                    form.classList.remove('loading');
+                    errorMessage.textContent = "Invalid username or password";
+                }
+            }, 1500); // 1.5 second delay
+        }
+
+        function forgotPassword() {
+            document.getElementById('forgotPasswordModal').style.display = 'block';
+        }
+
+        function createAccount() {
+            document.getElementById('createAccountModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            alert('Password reset link has been sent to your email.');
+            closeModal('forgotPasswordModal');
+        }
+
+        function handleCreateAccount(event) {
+            event.preventDefault();
+            alert('Account creation request has been sent to administrator.');
+            closeModal('createAccountModal');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Add this event listener for iframe messages
+        window.addEventListener('message', function(event) {
+            if (event.data === 'success') {
+                if (document.getElementById('forgotPasswordModal').style.display === 'block') {
+                    alert('Password reset link has been sent to your email.');
+                    closeModal('forgotPasswordModal');
+                } else if (document.getElementById('createAccountModal').style.display === 'block') {
+                    alert('Account creation request has been sent to administrator.');
+                    closeModal('createAccountModal');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

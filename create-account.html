@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            background: transparent;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #00796b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #005a4f;
+        }
+    </style>
+</head>
+<body>
+    <form onsubmit="handleSubmit(event)">
+        <h2>Create Account</h2>
+        <input type="text" placeholder="Full Name" required>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <input type="password" placeholder="Confirm Password" required>
+        <button type="submit">Create Account</button>
+    </form>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            parent.postMessage('success', '*');
+        }
+    </script>
+</body>
+</html>
